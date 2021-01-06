@@ -2,6 +2,7 @@ package com.api_cadastro.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,13 +34,11 @@ public class CadastroController {
 	public List<Cadastro> listar(){
 		return cadastroRepository.findAll(); //lista todos os cadastros
 		
-	}
-	
-	@PostMapping	
-	public Cadastro add(@RequestBody Cadastro cadastro) {
+	}	
+	@PostMapping(value="/create")	
+	public Cadastro add(@Valid @RequestBody Cadastro cadastro) {
 		return cadastroRepository.save(cadastro); //criar um cadastro
 	}
-	
 	
 	@GetMapping //endpoint: cadastro/cadastro/id
 	@RequestMapping(path = "/cadastro/{id}") 
@@ -47,7 +46,7 @@ public class CadastroController {
 		return cadastroRepository.findById(id).get(); //obter cadastro pelo ID
 	}
 	
-	@PutMapping(value="/cadastro/{id}")
+	@PutMapping(value="/update/{id}")
 	public Cadastro update(@PathVariable long id, @RequestBody Cadastro newcadastro) {
 		return cadastroRepository.findById(id).map(cad -> {
 			cad.setNome(newcadastro.getNome());
@@ -57,14 +56,16 @@ public class CadastroController {
 			return cadastroRepository.save(cad);
 		}).orElseGet(() -> {
 			newcadastro.setId(id);
+			
 			return cadastroRepository.save(newcadastro);
 		});
 
 	}
 	
-	@DeleteMapping ("/cadastro/{id}")
+	@DeleteMapping ("/del/{id}")
 	void delCadastroId(@PathVariable long id) {
-		cadastroRepository.deleteById(id); //deletar um cadastro pelo ID
+		cadastroRepository.deleteById(id); //deletar um cadastro pelo ID		
+		System.out.println("Cadastro Deletado com Sucesso");
 		
 	}
 	
